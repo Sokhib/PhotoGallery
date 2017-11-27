@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FlickrFetchr {
     private static final String TAG = "FlickrFetchr";
@@ -23,8 +24,11 @@ public class FlickrFetchr {
     private static final String METHOD_SEARCH= "flickr.photos.search";
     private static final String PARAM_EXTRAS = "extras";
     private static final String PARAM_TEXT = "text";
+    private static final String PARAM_MIN_UPLOAD_DATE= "min_upload_date";
     private static final String XML_PHOTO = "photo";
     private static final String EXTRA_MEDIUM_URL = "url_m";
+    public static String total="0";
+
     public static final String PREF_SEARCH_QUERY ="searchQuery" ;
 
     byte[] getUrlBytes(String urlSpec) throws IOException {
@@ -85,7 +89,8 @@ public class FlickrFetchr {
                 .appendQueryParameter("method", METHOD_SEARCH)
                 .appendQueryParameter("api_key", API_KEY)
                 .appendQueryParameter(PARAM_EXTRAS, EXTRA_MEDIUM_URL)
-                .appendQueryParameter(PARAM_TEXT,query)
+                .appendQueryParameter(PARAM_TEXT, query)
+                .appendQueryParameter(PARAM_MIN_UPLOAD_DATE, "2017-09-30")
                 .build().toString();
 
         return downloadGalleryItems(url);
@@ -93,18 +98,23 @@ public class FlickrFetchr {
 
 
     void parseItems(ArrayList<GalleryItem> items, XmlPullParser parser) throws XmlPullParserException, IOException {
+        //get total here :)
+
         int eventType = parser.next();
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG && XML_PHOTO.equals(parser.getName())) {
                 String id = parser.getAttributeValue(null, "id");
                 String caption = parser.getAttributeValue(null, "title");
                 String smallUrl = parser.getAttributeValue(null, EXTRA_MEDIUM_URL);
-
                 GalleryItem item = new GalleryItem();
                 item.setId(id);
                 item.setCaption(caption);
                 item.setmUrl(smallUrl);
                 items.add(item);
+            }
+            if (eventType == XmlPullParser.START_TAG && parser.getName().equals("photos")) {
+                     total = parser.getAttributeValue(null, "total");
+                    Log.i(TAG, "Number of items: " + total);
             }
             eventType = parser.next();
         }

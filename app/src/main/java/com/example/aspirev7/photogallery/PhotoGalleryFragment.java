@@ -2,21 +2,26 @@ package com.example.aspirev7.photogallery;
 
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -58,13 +63,22 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.photo_gallery_menu, menu);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            ComponentName name = getActivity().getComponentName();
+            SearchableInfo searchableInfo = searchManager.getSearchableInfo(name);
+            searchView.setSearchableInfo(searchableInfo);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_search:
-                getActivity().onSearchRequested();
+                //getActivity().onSearchRequested();
+                getActivity().startSearch("nature",true,null,false);
                 return true;
             case R.id.menu_item_clear:
                 PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -96,6 +110,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<GalleryItem> items) {
             super.onPostExecute(items);
+            Toast.makeText(getActivity(),FlickrFetchr.total,Toast.LENGTH_SHORT).show();
             adapter = new MyAdapter(getActivity(),items);
             photoGalleryRecyclerView.setAdapter(adapter);
             photoGalleryRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));

@@ -21,7 +21,7 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
         PhotoGalleryFragment fragment = (PhotoGalleryFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.i(TAG, "Received new query" + query);
+            Log.i(TAG, "Received new query " + query);
             PreferenceManager.getDefaultSharedPreferences(this)
                     .edit()
                     .putString(FlickrFetchr.PREF_SEARCH_QUERY, query)
