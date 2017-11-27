@@ -25,6 +25,7 @@ public class FlickrFetchr {
     private static final String PARAM_TEXT = "text";
     private static final String XML_PHOTO = "photo";
     private static final String EXTRA_MEDIUM_URL = "url_m";
+    public static final String PREF_SEARCH_QUERY ="searchQuery" ;
 
     byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);

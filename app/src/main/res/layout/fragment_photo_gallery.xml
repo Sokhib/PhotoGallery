@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="com.example.aspirev7.photogallery.PhotoGalleryFragment">
-
+    
     <android.support.v7.widget.RecyclerView
         android:id="@+id/f_photo_gallery_recyclerView"
         android:layout_width="match_parent"

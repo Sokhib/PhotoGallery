@@ -1,8 +1,10 @@
 package com.example.aspirev7.photogallery;
 
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -39,8 +41,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        new FetchItemsTask().execute();
-
+        updateItems();
 
     }
       @Override
@@ -66,6 +67,11 @@ public class PhotoGalleryFragment extends Fragment {
                 getActivity().onSearchRequested();
                 return true;
             case R.id.menu_item_clear:
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                        .edit()
+                        .putString(FlickrFetchr.PREF_SEARCH_QUERY, null)
+                        .commit();
+                updateItems();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -76,10 +82,15 @@ public class PhotoGalleryFragment extends Fragment {
     private class FetchItemsTask extends AsyncTask<Void,Void,ArrayList<GalleryItem>>{
         @Override
         protected ArrayList<GalleryItem> doInBackground(Void... voids) {
-            String query = "CS:GO"; // For test
+            Activity activity = getActivity();
+            if (activity == null) {
+                return new ArrayList<GalleryItem>();
+            }
+            String query = PreferenceManager.getDefaultSharedPreferences(activity)
+                    .getString(FlickrFetchr.PREF_SEARCH_QUERY, null);
             if (query != null)
                 return new FlickrFetchr().search(query);
-            else return  new FlickrFetchr().fetchItems();
+            else return new FlickrFetchr().fetchItems();
         }
 
         @Override
@@ -90,4 +101,9 @@ public class PhotoGalleryFragment extends Fragment {
             photoGalleryRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         }
     }
+    public void updateItems(){
+        new FetchItemsTask().execute();
+    }
+
+
 }
