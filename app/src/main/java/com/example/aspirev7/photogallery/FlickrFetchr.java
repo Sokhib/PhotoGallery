@@ -30,6 +30,7 @@ public class FlickrFetchr {
     public static String total="0";
 
     public static final String PREF_SEARCH_QUERY ="searchQuery" ;
+    public static final String PREF_LAST_RESULT_ID = "lastResultId";
 
     byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
@@ -90,7 +91,7 @@ public class FlickrFetchr {
                 .appendQueryParameter("api_key", API_KEY)
                 .appendQueryParameter(PARAM_EXTRAS, EXTRA_MEDIUM_URL)
                 .appendQueryParameter(PARAM_TEXT, query)
-                .appendQueryParameter(PARAM_MIN_UPLOAD_DATE, "2017-09-30")
+                .appendQueryParameter(PARAM_MIN_UPLOAD_DATE, "2017-10-30")
                 .build().toString();
 
         return downloadGalleryItems(url);
@@ -98,8 +99,6 @@ public class FlickrFetchr {
 
 
     void parseItems(ArrayList<GalleryItem> items, XmlPullParser parser) throws XmlPullParserException, IOException {
-        //get total here :)
-
         int eventType = parser.next();
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG && XML_PHOTO.equals(parser.getName())) {
