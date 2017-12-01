@@ -4,9 +4,11 @@ package com.example.aspirev7.photogallery;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +40,7 @@ public class PhotoGalleryFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     RecyclerView photoGalleryRecyclerView;
     MyAdapter adapter;
     private static final String TAG = "PhotoGalleryFragment";
@@ -54,7 +58,8 @@ public class PhotoGalleryFragment extends Fragment {
         // PollService.setServiceAlarm(getActivity(),true);
 
     }
-      @Override
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
@@ -68,14 +73,13 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.photo_gallery_menu, menu);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
             MenuItem searchItem = menu.findItem(R.id.menu_item_search);
             SearchView searchView = (SearchView) searchItem.getActionView();
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             ComponentName name = getActivity().getComponentName();
             SearchableInfo searchableInfo = searchManager.getSearchableInfo(name);
             searchView.setSearchableInfo(searchableInfo);
-        }
     }
 
     @Override
@@ -93,7 +97,7 @@ public class PhotoGalleryFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_item_search:
                 //getActivity().onSearchRequested();
-                getActivity().startSearch("nature",true,null,false);
+                getActivity().startSearch("nature", true, null, false);
                 return true;
             case R.id.menu_item_clear:
                 PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -112,12 +116,17 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
 
-    private class FetchItemsTask extends AsyncTask<Void,Void,ArrayList<GalleryItem>>{
+    private class FetchItemsTask extends AsyncTask<Void, Void, ArrayList<GalleryItem>> {
+        /*
+            *  About 100 pages of the book is left, aimed to finish it tonight,
+            *  but got a toothache, time is about 2.30+ AM,
+            *  have no idea WTF[rea]k I'm coding
+        * */
         @Override
         protected ArrayList<GalleryItem> doInBackground(Void... voids) {
             Activity activity = getActivity();
             if (activity == null) {
-                return new ArrayList<GalleryItem>();
+                return new ArrayList<>();
             }
             String query = PreferenceManager.getDefaultSharedPreferences(activity)
                     .getString(FlickrFetchr.PREF_SEARCH_QUERY, null);
@@ -129,15 +138,35 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<GalleryItem> items) {
             super.onPostExecute(items);
-            Toast.makeText(getActivity(),FlickrFetchr.total,Toast.LENGTH_SHORT).show();
-            adapter = new MyAdapter(getActivity(),items);
+            Toast.makeText(getActivity(), FlickrFetchr.total, Toast.LENGTH_SHORT).show();
+            adapter = new MyAdapter(getActivity(), items);
             photoGalleryRecyclerView.setAdapter(adapter);
             photoGalleryRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         }
     }
-    public void updateItems(){
+
+    public void updateItems() {
         new FetchItemsTask().execute();
     }
 
+    private BroadcastReceiver mOnShowNotification = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "canceling notification");
+            setResultCode(Activity.RESULT_CANCELED);
+        }
+    };
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(PollService.ACTION_SHOW_NOTIFICATION);
+        getActivity().registerReceiver(mOnShowNotification, intentFilter, PollService.PERM_PRIVATE, null);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mOnShowNotification);
+    }
 }

@@ -2,8 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.aspirev7.photogallery">
 
+    <permission android:name="com.example.aspirev7.photogallery.PRIVATE"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.example.aspirev7.photogallery.PRIVATE" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_bubble_chart_black_24dp"
@@ -29,6 +34,21 @@
                 android:resource="@xml/searchable" />
         </activity>
         <service android:name=".PollService"/>
+        <receiver android:name=".StartupReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+
+        </receiver>
+        <receiver android:name=".NotificationReceiver"
+            android:exported="false">
+            <intent-filter android:priority="-999">
+
+                <action android:name="com.example.aspirev7.photogallery.SHOW_NOTIFICATION" />
+            </intent-filter>
+
+        </receiver>
+
 
 
     </application>

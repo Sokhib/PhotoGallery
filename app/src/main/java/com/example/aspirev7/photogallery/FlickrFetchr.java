@@ -41,7 +41,7 @@ public class FlickrFetchr {
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 return null;
             }
-            int bytesRead = 0;
+            int bytesRead;
             byte[] buffer = new byte[1024];
             while ((bytesRead = in.read(buffer)) > 0) {  // reads up to buffer.length() ...
                 out.write(buffer, 0, bytesRead); // writes bytesRead length of data to outStream
@@ -91,7 +91,7 @@ public class FlickrFetchr {
                 .appendQueryParameter("api_key", API_KEY)
                 .appendQueryParameter(PARAM_EXTRAS, EXTRA_MEDIUM_URL)
                 .appendQueryParameter(PARAM_TEXT, query)
-                .appendQueryParameter(PARAM_MIN_UPLOAD_DATE, "2017-10-30")
+                .appendQueryParameter(PARAM_MIN_UPLOAD_DATE, "2017-11-30")
                 .build().toString();
 
         return downloadGalleryItems(url);
@@ -104,11 +104,11 @@ public class FlickrFetchr {
             if (eventType == XmlPullParser.START_TAG && XML_PHOTO.equals(parser.getName())) {
                 String id = parser.getAttributeValue(null, "id");
                 String caption = parser.getAttributeValue(null, "title");
-                String smallUrl = parser.getAttributeValue(null, EXTRA_MEDIUM_URL);
+                String mediumUrl = parser.getAttributeValue(null, EXTRA_MEDIUM_URL);
                 GalleryItem item = new GalleryItem();
                 item.setId(id);
                 item.setCaption(caption);
-                item.setmUrl(smallUrl);
+                item.setmUrl(mediumUrl);
                 items.add(item);
             }
             if (eventType == XmlPullParser.START_TAG && parser.getName().equals("photos")) {
