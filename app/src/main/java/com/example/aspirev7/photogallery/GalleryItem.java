@@ -8,8 +8,13 @@ public class GalleryItem {
     private String mCaption;
     private String mId;
     private String mUrl;
-    public String toString(){
-        return mCaption;
+    private String mOwner;
+
+    public String getOwner() {
+        return mOwner;
+    }
+    public void setOwner(String mOwner) {
+        this.mOwner = mOwner;
     }
     public String getCaption() {
         return mCaption;
@@ -35,5 +40,8 @@ public class GalleryItem {
         this.mUrl = mUrl;
     }
 
+    public String getPhotoPageURL(){
+        return "https://www.flickr.com/photos/" + mOwner + "/" + mId;
+    }
 
 }

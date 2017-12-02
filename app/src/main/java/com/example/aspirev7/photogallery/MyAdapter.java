@@ -1,6 +1,8 @@
 package com.example.aspirev7.photogallery;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         //holder.galleryImage.setImageResource(); TODO:GET IMAGE
         Picasso.with(context).load(items.get(position).getmUrl()).into(holder.galleryImage);
+
+
     }
 
 
@@ -44,14 +48,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return items.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView galleryImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             galleryImage = itemView.findViewById(R.id.galleryListImage);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            GalleryItem item = items.get(getAdapterPosition());
+            Uri photoPageUri = Uri.parse(item.getPhotoPageURL());
+            Intent i = new Intent(context, PhotoPageActivity.class);
+            i.setData(photoPageUri);
+            context.startActivity(i);
         }
     }
-
-
 }

@@ -105,8 +105,10 @@ public class FlickrFetchr {
                 String id = parser.getAttributeValue(null, "id");
                 String caption = parser.getAttributeValue(null, "title");
                 String mediumUrl = parser.getAttributeValue(null, EXTRA_MEDIUM_URL);
+                String owner = parser.getAttributeValue(null, "owner");
                 GalleryItem item = new GalleryItem();
                 item.setId(id);
+                item.setOwner(owner);
                 item.setCaption(caption);
                 item.setmUrl(mediumUrl);
                 items.add(item);

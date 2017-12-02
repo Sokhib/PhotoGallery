@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -114,8 +113,6 @@ public class PhotoGalleryFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
     private class FetchItemsTask extends AsyncTask<Void, Void, ArrayList<GalleryItem>> {
         /*
             *  About 100 pages of the book is left, aimed to finish it tonight,
@@ -134,7 +131,6 @@ public class PhotoGalleryFragment extends Fragment {
                 return new FlickrFetchr().search(query);
             else return new FlickrFetchr().fetchItems();
         }
-
         @Override
         protected void onPostExecute(ArrayList<GalleryItem> items) {
             super.onPostExecute(items);
@@ -144,7 +140,6 @@ public class PhotoGalleryFragment extends Fragment {
             photoGalleryRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         }
     }
-
     public void updateItems() {
         new FetchItemsTask().execute();
     }
@@ -156,14 +151,12 @@ public class PhotoGalleryFragment extends Fragment {
             setResultCode(Activity.RESULT_CANCELED);
         }
     };
-
     @Override
     public void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter(PollService.ACTION_SHOW_NOTIFICATION);
         getActivity().registerReceiver(mOnShowNotification, intentFilter, PollService.PERM_PRIVATE, null);
     }
-
     @Override
     public void onPause() {
         super.onPause();
